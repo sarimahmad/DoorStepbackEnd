@@ -92,19 +92,14 @@ class PlaceOrderView(APIView):
     def post(self, request):
         p_id = request.data['product']
         quantity = request.data['quantity']
-        try:
-            product = Product.objects.get(id=p_id)
-            data = product.quantity
-            new_data = int(data) - int(quantity)
-            print("hello",new_data)
-            product.quantity = new_data
-            product.save()
-        except Exception as e:
-            return Response("Out of Stock", status=status.HTTP_404_NOT_FOUND)
         serializers = self.serializers_class(data=request.data)
         if serializers.is_valid():
             serializers.save(buyer=request.user)
             data = serializers.data
+            # product = Product.objects.get(id=p_id)
+            # new_data = int(product.quantity) - int(quantity)
+            # product.quantity = new_data
+            # product.save()
             responce_data = {
                 'Success': data
             }
@@ -114,10 +109,19 @@ class PlaceOrderView(APIView):
 
 
 class DeleteOrder(APIView):
+
     def delete(self, request, id):
-        data = PlaceOrder.objects.get(id=id)
-        data.delete()
-        return Response("Order Deleted", status=status.HTTP_200_OK)
+        try:
+            data = PlaceOrder.objects.get(id=id)
+            product = Product.objects.get(id=data.product_id)
+            quantity = request.data['quantity']
+            product.quantity = product.quantity + quantity
+            product.save()
+            data.delete()
+            return Response("Order Deleted", status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response("Something went Wrong",status=status.HTTP_404_NOT_FOUND)
+
 
 
 class UpdateStatus(APIView):

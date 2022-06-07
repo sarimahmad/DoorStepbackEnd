@@ -24,15 +24,11 @@ class Product(models.Model):
     category = models.CharField(max_length=255, choices=Product_Type, null=True, blank=True)
 
     product_description = models.CharField(max_length=5000, null=True, blank=True)
-    sold = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
     Updated_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title
-
-
-
 
 
 class ProductReview(models.Model):
@@ -46,6 +42,10 @@ class ProductReview(models.Model):
 
 
 class PlaceOrder(models.Model):
+    paymentMethod = (
+        ("Cash","Cash"),
+        ("Credit/Debit", "Credit/Debit"),
+    )
     buyer = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE,
                               related_name="Buying_Product",
                               default=None, blank=True, null=True)
@@ -61,7 +61,8 @@ class PlaceOrder(models.Model):
     shipArea = models.CharField(max_length=1000, null=True, blank=True)
     orderNotes = models.CharField(max_length=1000, null=True, blank=True)
     delivered = models.BooleanField(default=False)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=None, blank=True, null=True)
+    paymentMethod = models.CharField(max_length=100, choices=paymentMethod ,null=True, blank=True)
+    product = models.ManyToManyField(to=Product)
     quantity = models.IntegerField(null=True, blank=True)
     amount = models.IntegerField(null=True, blank=True)
 

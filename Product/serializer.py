@@ -49,6 +49,7 @@ class PlaceOrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+
 class StatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Status
@@ -58,7 +59,7 @@ class StatusSerializer(serializers.ModelSerializer):
 class GetPlaceOrderSerializer(serializers.ModelSerializer):
     buyer = GetUserSerializer(read_only=True)
     seller = GetUserSerializer(read_only=True)
-    product = GetProductSerializer(read_only=True)
+    product = GetProductSerializer(read_only=True, many=True)
     Product_Status = StatusSerializer(many=True)
 
     class Meta:

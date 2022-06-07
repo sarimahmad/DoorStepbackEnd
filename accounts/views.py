@@ -40,7 +40,7 @@ class LoginAPIView(APIView):
         refresh = RefreshToken.for_user(user)
         update_last_login(None, user)
         user = SignUpSerializer(user)
-        return Response({"Token": str(refresh.access_token), "User": user.data}, status=status.HTTP_200_OK)
+        return Response({"Token": str(refresh.access_token), "user": user.data}, status=status.HTTP_200_OK)
 
 
 class UpdateProfileView(APIView):

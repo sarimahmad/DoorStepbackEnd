@@ -1,3 +1,4 @@
+from statistics import mode
 from django.db import models
 from django.utils import timezone
 
@@ -49,9 +50,7 @@ class PlaceOrder(models.Model):
     buyer = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE,
                               related_name="Buying_Product",
                               default=None, blank=True, null=True)
-    seller = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE,
-                               related_name="Seller_Product",
-                               default=None, blank=True, null=True)
+    seller = models.ManyToManyField(to="accounts.CustomUser")
     name = models.CharField(max_length=200, null=True, blank=True)
     phone = models.IntegerField(null=True, blank=True)
     email = email = models.EmailField(verbose_name='email', max_length=255, blank=True, null=True,
@@ -63,7 +62,7 @@ class PlaceOrder(models.Model):
     delivered = models.BooleanField(default=False)
     paymentMethod = models.CharField(max_length=100, choices=paymentMethod ,null=True, blank=True)
     product = models.ManyToManyField(to=Product)
-    quantity = models.IntegerField(null=True, blank=True)
+    quantity = models.JSONField(blank=True, null=True)
     amount = models.IntegerField(null=True, blank=True)
 
 class Status(models.Model):

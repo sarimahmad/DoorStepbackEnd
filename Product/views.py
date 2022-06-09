@@ -36,7 +36,7 @@ class GetSellerProducts(APIView):
 class GetOrdersProducts(APIView):
     def get(self, request):
         if request.user.role == "Seller":
-            data = request.user.Seller_Product.all()
+            data = PlaceOrder.objects.filter(seller = request.user.id)
             serializers = GetPlaceOrderSerializer(data, many=True)
             serializers_data = serializers.data
             return Response(serializers_data)
@@ -86,7 +86,7 @@ class GetProductReview(APIView):
 
 
 class PlaceOrderView(APIView):
-    # permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
     serializers_class = PlaceOrderSerializer
 
     def post(self, request):
@@ -96,10 +96,11 @@ class PlaceOrderView(APIView):
         if serializers.is_valid():
             serializers.save(buyer=request.user)
             data = serializers.data
-            # product = Product.objects.get(id=p_id)
-            # new_data = int(product.quantity) - int(quantity)
-            # product.quantity = new_data
-            # product.save()
+            for i in range(0,len(quantity)):
+                product = Product.objects.get(id=p_id[i])
+                new_data = int(product.quantity) - int(quantity[i])
+                product.quantity = new_data
+                product.save()
             responce_data = {
                 'Success': data
             }

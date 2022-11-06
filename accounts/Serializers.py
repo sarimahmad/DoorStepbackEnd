@@ -59,10 +59,19 @@ class LoginSerializers(serializers.Serializer):
 class UpdateProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ("username",)
+        fields = ("username", "email")
 
     def update(self, instance, validated_data):
         print(validated_data['username'])
         instance.username = validated_data.get('username', instance.username)
+        instance.email = validated_data.get('email', instance.email)
         instance.save()
         return instance
+
+
+class ChatSerializer(serializers.ModelSerializer):
+    user = GetUserSerializer(read_only=True)
+
+    class Meta:
+        model = Chat
+        fields = '__all__'

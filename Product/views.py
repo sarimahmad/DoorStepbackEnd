@@ -36,12 +36,12 @@ class GetSellerProducts(APIView):
 class GetOrdersProducts(APIView):
     def get(self, request):
         if request.user.role == "Seller":
-            data = PlaceOrder.objects.filter(seller = request.user.id)
+            data = PlaceOrder.objects.filter(seller=request.user.id)
             serializers = GetPlaceOrderSerializer(data, many=True)
             serializers_data = serializers.data
             return Response(serializers_data)
         else:
-            data = request.user.Buying_Product.all()
+            data = PlaceOrder.objects.filter(buyer=request.user.id)
             serializers = GetPlaceOrderSerializer(data, many=True)
             serializers_data = serializers.data
             return Response(serializers_data)
@@ -96,7 +96,7 @@ class PlaceOrderView(APIView):
         if serializers.is_valid():
             serializers.save(buyer=request.user)
             data = serializers.data
-            for i in range(0,len(quantity)):
+            for i in range(0, len(quantity)):
                 product = Product.objects.get(id=p_id[i])
                 new_data = int(product.quantity) - int(quantity[i])
                 product.quantity = new_data
@@ -121,8 +121,7 @@ class DeleteOrder(APIView):
             data.delete()
             return Response("Order Deleted", status=status.HTTP_200_OK)
         except Exception as e:
-            return Response("Something went Wrong",status=status.HTTP_404_NOT_FOUND)
-
+            return Response("Something went Wrong", status=status.HTTP_404_NOT_FOUND)
 
 
 class UpdateStatus(APIView):
@@ -143,3 +142,15 @@ class UpdateStatus(APIView):
             return Response(responce_data, status=status.HTTP_200_OK)
         else:
             return Response(serializers.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+
+class UpdateProduct(APIView):
+    def post(self, request, id):
+        quantity = request.data['quantity']
+        try:
+            product = Product.objects.get(id=id)
+            product.quantity = quantity
+            product.save()
+            return Response({"status":1},status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": 0}, status=status.HTTP_404_NOT_FOUND)

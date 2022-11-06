@@ -28,7 +28,7 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_staffuser(self,email, password, **extra_fields):
+    def create_staffuser(self, email, password, **extra_fields):
         """
         Creates and saves a staff user with the given email and password.
         """
@@ -88,3 +88,21 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+# This is Correct Method
+class Room(models.Model):
+    room = models.IntegerField(editable=False)
+
+
+class Chat(models.Model):
+    _id = models.AutoField(primary_key=True, editable=False)
+    text = models.CharField(max_length=255, null=True, blank=True)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE,
+                             related_name="UserAllMessage",
+                             default=None, blank=True, null=True)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE,
+                             related_name="Room_Messages",
+                             default=None, blank=True, null=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    Updated_at = models.DateTimeField(default=timezone.now)

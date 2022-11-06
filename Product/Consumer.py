@@ -1,7 +1,6 @@
 import json
 
 from channels.generic.websocket import AsyncWebsocketConsumer
-from asgiref.sync import async_to_sync
 
 
 class MyConsumer(AsyncWebsocketConsumer):
@@ -14,12 +13,12 @@ class MyConsumer(AsyncWebsocketConsumer):
         await self.accept()
         await self.send(text_data=json.dumps({'status': 'Connected from django Channels'}))
 
-
     async def receive(self, text_data):
         data = json.loads(text_data)
         print(data)
         message = data['message']
-        username = data['username']
+        _id = data['_id']
+        user = data["user"]
 
         # send message to room group
         await self.channel_layer.group_send(
@@ -27,23 +26,27 @@ class MyConsumer(AsyncWebsocketConsumer):
             {
                 'type': "chat_message",
                 'message': message,
-                'username': username,
+                'user': user,
+                '_id': _id,
             }
         )
 
     async def chat_message(self, event):
         message = event['message']
-        username = event['username']
+        _id = event['_id']
+        user = event['user']
 
         # send message to room group
         await self.send(text_data=json.dumps(
             {
                 'message': message,
-                'username': username,
+                'user': user,
+                '_id': _id,
 
             }
         )
         )
+
     async def disconnect(self, *args, **kwargs):
         print("Disconnect")
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)

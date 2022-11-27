@@ -15,6 +15,8 @@ urlpatterns = [
     path('UpdateStatus/', UpdateStatus.as_view(), name='Place_Order_Api'),
     path('delete_order/<int:id>/', DeleteOrder.as_view(), name='All_Product_Review_Api'),
     path('UpdateQuantity/<int:id>/', UpdateProduct.as_view(), name='Update_Product_Api'),
+    path('EditQuantity/<int:id>/', EditProduct.as_view(), name='Edit_Product_Api'),
+    path('DeleteProduct/<int:id>/', DeleteProduct.as_view(), name='Delete_Product_Api'),
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -151,6 +151,35 @@ class UpdateProduct(APIView):
             product = Product.objects.get(id=id)
             product.quantity = quantity
             product.save()
-            return Response({"status":1},status=status.HTTP_200_OK)
+            return Response({"status": 1}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": 0}, status=status.HTTP_404_NOT_FOUND)
+
+
+class EditProduct(APIView):
+    def post(self, request, id):
+        try:
+            product = Product.objects.get(id=id)
+            product.quantity = request.data['quantity']
+            product.price = request.data['price']
+            product.title = request.data['title']
+            print(type(request.data["image"]))
+            if type(request.data["image"]) is not str:
+                product.image = request.data["image"]
+            product.category = request.data['category']
+            product.product_description = request.data['product_description']
+
+            product.save()
+            return Response({"status": 1}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": 0}, status=status.HTTP_404_NOT_FOUND)
+
+class DeleteProduct(APIView):
+    def delete(self, request, id):
+        try:
+            product = Product.objects.get(id=id)
+            product.delete()
+            return Response({"status": 1}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"status": 0}, status=status.HTTP_404_NOT_FOUND)
+

@@ -37,6 +37,7 @@ class MyConsumer(AsyncWebsocketConsumer):
         user = event['user']
 
         # send message to room group
+
         await self.send(text_data=json.dumps(
             {
                 'message': message,
@@ -45,6 +46,7 @@ class MyConsumer(AsyncWebsocketConsumer):
 
             }
         )
+
         )
 
     async def disconnect(self, *args, **kwargs):

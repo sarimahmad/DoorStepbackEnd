@@ -92,31 +92,56 @@ class PlaceOrderView(APIView):
     def post(self, request):
         p_id = request.data['product']
         quantity = request.data['quantity']
-        serializers = self.serializers_class(data=request.data)
-        if serializers.is_valid():
-            serializers.save(buyer=request.user)
-            data = serializers.data
-            for i in range(0, len(quantity)):
-                product = Product.objects.get(id=p_id[i])
-                new_data = int(product.quantity) - int(quantity[i])
-                product.quantity = new_data
-                product.save()
-            responce_data = {
-                'Success': data
-            }
-            return Response(responce_data, status=status.HTTP_200_OK)
-        else:
-            return Response(serializers.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        seller = request.data['seller']
+        unique_seller = list(dict.fromkeys(seller))
+        order_data = {i: {"quantity": [], "product": [], "amount": []} for i in unique_seller}
+
+        for i in range(0, len(p_id)):
+            product = Product.objects.get(id=p_id[i])
+            print(product.price)
+            price = (product.price * quantity[i]) + 100
+            order_data[seller[i]]["quantity"].append(quantity[i])
+            order_data[seller[i]]["product"].append(p_id[i])
+            order_data[seller[i]]["amount"].append(price)
+
+        data = request.data
+        for keys, values in order_data.items():
+            data["seller"] = [keys]
+            data["product"] = values["product"]
+            data["quantity"] = values["quantity"]
+            data["amount"] = sum(values["amount"])
+            serializers = self.serializers_class(data=data)
+            if serializers.is_valid():
+                serializers.save(buyer=request.user)
+                data = serializers.data
+                for i in range(0, len(quantity)):
+                    product = Product.objects.get(id=p_id[i])
+                    new_data = int(product.quantity) - int(quantity[i])
+                    product.quantity = new_data
+                    product.save()
+
+            else:
+                return Response(serializers.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        return Response({
+            'Success': "Order has been Place"
+        }, status=status.HTTP_200_OK)
 
 
 class DeleteOrder(APIView):
 
     def delete(self, request, id):
+        quantity = request.data['quantity']
+        print(int(quantity[0]))
+        data = PlaceOrder.objects.get(id=id)
+
+        # product = Product.objects.get(id=data.product_id)
+        print("ORder", data.product.all())
+        # print("product", product)
         try:
             data = PlaceOrder.objects.get(id=id)
             product = Product.objects.get(id=data.product_id)
             quantity = request.data['quantity']
-            product.quantity = product.quantity + quantity
+            product.quantity = product.quantity + int(quantity[0])
             product.save()
             data.delete()
             return Response("Order Deleted", status=status.HTTP_200_OK)
@@ -174,6 +199,7 @@ class EditProduct(APIView):
         except Exception as e:
             return Response({"status": 0}, status=status.HTTP_404_NOT_FOUND)
 
+
 class DeleteProduct(APIView):
     def delete(self, request, id):
         try:
@@ -182,4 +208,3 @@ class DeleteProduct(APIView):
             return Response({"status": 1}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"status": 0}, status=status.HTTP_404_NOT_FOUND)
-

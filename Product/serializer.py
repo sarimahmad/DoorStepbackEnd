@@ -10,7 +10,7 @@ class StatusSerializer(serializers.ModelSerializer):
 
 
 class GetProductSerializer(serializers.ModelSerializer):
-    user = GetUserSerializer(read_only=True)
+    seller = GetUserSerializer(read_only=True)
 
     class Meta:
         model = Product

@@ -75,9 +75,14 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         'null': 'This feild cannot be nulll'
     })
     username = models.CharField(max_length=255, blank=True, null=True, unique=True)
+    phone_number = models.CharField(max_length=13, blank=True, null=True, unique=True)
+    city = models.CharField(max_length=255, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
     role = models.CharField(max_length=10, choices=Register_as)
+    room = models.ManyToManyField(to="accounts.Room", blank=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
@@ -106,3 +111,4 @@ class Chat(models.Model):
                              default=None, blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     Updated_at = models.DateTimeField(default=timezone.now)
+

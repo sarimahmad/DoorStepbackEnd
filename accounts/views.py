@@ -7,6 +7,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.models import update_last_login
+import random
 
 
 # Create your views here.
@@ -86,3 +87,57 @@ class ChatData(APIView):
                 data.append(i)
         chat_messages = ChatSerializer(data, many=True)
         return Response(chat_messages.data, status=status.HTTP_200_OK)
+
+
+class ChatUsers(APIView):
+
+    def post(self, request, user1, user2):
+        user_1 = CustomUser.objects.get(id=user1)
+        user_2 = CustomUser.objects.get(id=user2)
+        room_Already = Check_Room_Data(user_1.room.all(), user_2.room.all())
+        print(room_Already)
+        if room_Already:
+            return Response({"status": 2, "message": 'Room Already Created for these Users'}, status=status.HTTP_200_OK)
+        rand_numb = Check_Duplicate_Room()
+        room_creation = Room.objects.create(room=rand_numb)
+        user_1.room.add(room_creation)
+        user_2.room.add(room_creation)
+        room_creation.save()
+        user_1.save()
+        user_2.save()
+        return Response({"status": 1, "message": 'Room created for these Users'}, status=status.HTTP_200_OK)
+
+    def get(self, request, user1, user2):
+        user = CustomUser.objects.get(id=request.user.id)
+        user_all_room = []
+        data = user.room.all()
+        print(data)
+        # for j in data:
+        #     for i in CustomUser.objects.all():
+        #         if j in i.room.all():
+        #             user_all_room.append(i)
+
+        # print(user_all_room)
+
+        return Response("chat_users.data", status=status.HTTP_200_OK)
+
+
+def Check_Room_Data(list1, list2):
+    if len(list1) > len(list2):
+        loop = list2
+        checking = list1
+    else:
+        checking = list2
+        loop = list1
+    for i in loop:
+        if i in checking:
+            return True
+    return False
+
+
+def Check_Duplicate_Room():
+    rand_numb = random.randint(0, 1000)
+    for i in Room.objects.all():
+        if rand_numb == i.room:
+            Check_Duplicate_Room()
+    return rand_numb

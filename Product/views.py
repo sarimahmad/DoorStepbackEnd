@@ -98,7 +98,6 @@ class PlaceOrderView(APIView):
 
         for i in range(0, len(p_id)):
             product = Product.objects.get(id=p_id[i])
-            print(product.price)
             price = (product.price * quantity[i]) + 100
             order_data[seller[i]]["quantity"].append(quantity[i])
             order_data[seller[i]]["product"].append(p_id[i])
@@ -119,7 +118,6 @@ class PlaceOrderView(APIView):
                     new_data = int(product.quantity) - int(quantity[i])
                     product.quantity = new_data
                     product.save()
-
             else:
                 return Response(serializers.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
         return Response({
@@ -130,19 +128,14 @@ class PlaceOrderView(APIView):
 class DeleteOrder(APIView):
 
     def delete(self, request, id):
-        quantity = request.data['quantity']
-        print(int(quantity[0]))
-        data = PlaceOrder.objects.get(id=id)
-
-        # product = Product.objects.get(id=data.product_id)
-        print("ORder", data.product.all())
-        # print("product", product)
         try:
-            data = PlaceOrder.objects.get(id=id)
-            product = Product.objects.get(id=data.product_id)
             quantity = request.data['quantity']
-            product.quantity = product.quantity + int(quantity[0])
-            product.save()
+            data = PlaceOrder.objects.get(id=id)
+            for index, val in enumerate(data.product.all()):
+                print(val.quantity)
+                new_quantity = val.quantity + int(quantity[index])
+                val.quantity = new_quantity
+                val.save()
             data.delete()
             return Response("Order Deleted", status=status.HTTP_200_OK)
         except Exception as e:

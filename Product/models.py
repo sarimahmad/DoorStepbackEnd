@@ -44,7 +44,7 @@ class ProductReview(models.Model):
 
 class PlaceOrder(models.Model):
     paymentMethod = (
-        ("Cash","Cash"),
+        ("Cash", "Cash"),
         ("Credit/Debit", "Credit/Debit"),
     )
     buyer = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE,
@@ -60,15 +60,16 @@ class PlaceOrder(models.Model):
     shipArea = models.CharField(max_length=1000, null=True, blank=True)
     orderNotes = models.CharField(max_length=1000, null=True, blank=True)
     delivered = models.BooleanField(default=False)
-    paymentMethod = models.CharField(max_length=100, choices=paymentMethod ,null=True, blank=True)
+    paymentMethod = models.CharField(max_length=100, choices=paymentMethod, null=True, blank=True)
     product = models.ManyToManyField(to=Product)
     quantity = models.JSONField(blank=True, null=True)
     amount = models.IntegerField(null=True, blank=True)
 
+
 class Status(models.Model):
     order = models.ForeignKey(PlaceOrder, on_delete=models.CASCADE,
-                             related_name="Product_Status",
-                             default=None, blank=True, null=True)
+                              related_name="Product_Status",
+                              default=None, blank=True, null=True)
     status = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     Updated_at = models.DateTimeField(default=timezone.now)

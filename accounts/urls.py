@@ -8,8 +8,7 @@ urlpatterns = [
     path('SignUp/', SignUp.as_view(), name='Sign_Up_Api'),
     path('UpdateProfile/<int:pk>/', UpdateProfileView.as_view(), name='UpdateProfile_Api'),
     path('ChangePassword/<int:id>/', ChangePassword.as_view(), name='UpdateProfile_Api'),
-    path('Chat/<int:id>/', ChatData.as_view(), name='Post_Chat_Api'),
-    path('Chat/SenderId/<int:senderId>/ReceiverId/<int:receiverId>/', ChatData.as_view(), name='Get_Chat_Api'),
+    path('Chat/<int:room_id>/', ChatData.as_view(), name='Chat_Api'),
     path('Chat_Room/user1/<int:user1>/user2/<int:user2>/', ChatUsers.as_view(), name='Chat_Users_Api'),
 ]
 

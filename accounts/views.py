@@ -3,10 +3,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .Serializers import *
+from django.http import JsonResponse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.exceptions import AuthenticationFailed
 from django.contrib.auth.models import update_last_login
+from accounts.Serializers import *
 import random
 
 
@@ -68,24 +69,20 @@ class ChangePassword(APIView):
 class ChatData(APIView):
     serializers_class = ChatSerializer
 
-    def post(self, request, id):
-        user = CustomUser.objects.get(id=id)
+    def post(self, request, room_id):
+        user = CustomUser.objects.get(id=request.data['user'])
         serializers = self.serializers_class(data=request.data)
         if serializers.is_valid():
-            user = serializers.save(user=user)
+            user = serializers.save(user=user , room_id=room_id)
             user.save()
             data = serializers.data
             return Response(data, status=status.HTTP_200_OK)
         else:
             return Response(serializers.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
-    def get(self, request, senderId, receiverId):
-        data = []
-        messages = Chat.objects.all()
-        for i in messages:
-            if i.user.id == senderId or i.user.id == receiverId:
-                data.append(i)
-        chat_messages = ChatSerializer(data, many=True)
+    def get(self, request, room_id):
+        messages = Chat.objects.filter(room_id=room_id)
+        chat_messages = ChatSerializer(messages, many=True)
         return Response(chat_messages.data, status=status.HTTP_200_OK)
 
 
@@ -112,14 +109,21 @@ class ChatUsers(APIView):
         user_all_room = []
         data = user.room.all()
         print(data)
-        # for j in data:
-        #     for i in CustomUser.objects.all():
-        #         if j in i.room.all():
-        #             user_all_room.append(i)
+        for j in data:
+            users = get_Room_Person(j)
+            user_all_room.append({j.id:users})
+        return JsonResponse({"data":user_all_room}, status=status.HTTP_200_OK)
 
-        # print(user_all_room)
 
-        return Response("chat_users.data", status=status.HTTP_200_OK)
+
+def get_Room_Person(room_id):
+    room_person = []
+    for i in CustomUser.objects.all():
+        if room_id in i.room.all():
+            serializersed_data = GetUserSerializer(i)
+            room_person.append(serializersed_data.data)
+    return room_person
+
 
 
 def Check_Room_Data(list1, list2):

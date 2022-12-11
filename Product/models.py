@@ -32,6 +32,8 @@ class Product(models.Model):
         return self.title
 
 
+
+
 class ProductReview(models.Model):
     user = models.ForeignKey("accounts.CustomUser", on_delete=models.CASCADE,
                              related_name="User_Review",
@@ -40,6 +42,7 @@ class ProductReview(models.Model):
                                 related_name="Product_Review",
                                 default=None, blank=True, null=True)
     Review = models.CharField(max_length=1000, null=True, blank=True)
+    star = models.IntegerField(default=0)
 
 
 class PlaceOrder(models.Model):

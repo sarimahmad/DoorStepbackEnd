@@ -10,6 +10,7 @@ urlpatterns = [
     path('ChangePassword/<int:id>/', ChangePassword.as_view(), name='UpdateProfile_Api'),
     path('Chat/<int:room_id>/', ChatData.as_view(), name='Chat_Api'),
     path('Chat_Room/user1/<int:user1>/user2/<int:user2>/', ChatUsers.as_view(), name='Chat_Users_Api'),
+    path('Chat_Room/AllChats/', GetAllChats.as_view(), name='All_Chats_Api'),
 ]
 
 urlpatterns = urlpatterns + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

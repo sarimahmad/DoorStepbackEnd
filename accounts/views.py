@@ -73,7 +73,7 @@ class ChatData(APIView):
         user = CustomUser.objects.get(id=request.data['user'])
         serializers = self.serializers_class(data=request.data)
         if serializers.is_valid():
-            user = serializers.save(user=user , room_id=room_id)
+            user = serializers.save(user=user, room_id=room_id)
             user.save()
             data = serializers.data
             return Response(data, status=status.HTTP_200_OK)
@@ -82,8 +82,10 @@ class ChatData(APIView):
 
     def get(self, request, room_id):
         messages = Chat.objects.filter(room_id=room_id)
-        chat_messages = ChatSerializer(messages, many=True)
-        return Response(chat_messages.data, status=status.HTTP_200_OK)
+        new_message = []
+        for i in messages:
+            new_message.append({"_id": i._id, "text": i.text,"room":i.room.id, "user": {"_id": i.user_id}, "createdAt":i.created_at})
+        return JsonResponse(new_message, status=status.HTTP_200_OK, safe=False)
 
 
 class ChatUsers(APIView):
@@ -104,16 +106,16 @@ class ChatUsers(APIView):
         user_2.save()
         return Response({"status": 1, "message": 'Room created for these Users'}, status=status.HTTP_200_OK)
 
-    def get(self, request, user1, user2):
+
+class GetAllChats(APIView):
+    def get(self, request):
         user = CustomUser.objects.get(id=request.user.id)
         user_all_room = []
         data = user.room.all()
-        print(data)
         for j in data:
             users = get_Room_Person(j)
-            user_all_room.append({j.id:users})
-        return JsonResponse({"data":user_all_room}, status=status.HTTP_200_OK)
-
+            user_all_room.append({"room_id": j.id, "person": users})
+        return JsonResponse({"data": user_all_room}, status=status.HTTP_200_OK)
 
 
 def get_Room_Person(room_id):
@@ -123,7 +125,6 @@ def get_Room_Person(room_id):
             serializersed_data = GetUserSerializer(i)
             room_person.append(serializersed_data.data)
     return room_person
-
 
 
 def Check_Room_Data(list1, list2):

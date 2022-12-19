@@ -95,7 +95,6 @@ class PlaceOrderView(APIView):
         seller = request.data['seller']
         unique_seller = list(dict.fromkeys(seller))
         order_data = {i: {"quantity": [], "product": [], "amount": []} for i in unique_seller}
-
         for i in range(0, len(p_id)):
             product = Product.objects.get(id=p_id[i])
             price = (product.price * quantity[i]) + 100

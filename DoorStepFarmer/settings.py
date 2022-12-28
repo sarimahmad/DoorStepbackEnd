@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'accounts.apps.AccountsConfig',
     'Product.apps.ProductConfig',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -52,23 +51,9 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-]
-
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
 ]
 
 

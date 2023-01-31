@@ -84,7 +84,8 @@ class ChatData(APIView):
         messages = Chat.objects.filter(room_id=room_id)
         new_message = []
         for i in messages:
-            new_message.append({"_id": i._id, "text": i.text,"room":i.room.id, "user": {"_id": i.user_id}, "createdAt":i.created_at})
+            new_message.append({"_id": i._id, "text": i.text, "room": i.room.id, "user": {"_id": i.user_id},
+                                "createdAt": i.created_at})
         return JsonResponse(new_message, status=status.HTTP_200_OK, safe=False)
 
 
@@ -94,9 +95,13 @@ class ChatUsers(APIView):
         user_1 = CustomUser.objects.get(id=user1)
         user_2 = CustomUser.objects.get(id=user2)
         room_Already = Check_Room_Data(user_1.room.all(), user_2.room.all())
-        print(room_Already)
+
         if room_Already:
-            return Response({"status": 2, "message": 'Room Already Created for these Users'}, status=status.HTTP_200_OK)
+            room_id = 0
+            for i in user_1.room.all():
+                if i in user_2.room.all():
+                    room_id = i.id
+            return Response({"status": 2, "message": 'Room Already Created for these Users', "room": room_id}, status=status.HTTP_200_OK)
         rand_numb = Check_Duplicate_Room()
         room_creation = Room.objects.create(room=rand_numb)
         user_1.room.add(room_creation)
@@ -104,7 +109,8 @@ class ChatUsers(APIView):
         room_creation.save()
         user_1.save()
         user_2.save()
-        return Response({"status": 1, "message": 'Room created for these Users'}, status=status.HTTP_200_OK)
+        return Response({"status": 1, "message": 'Room created for these Users', "room": room_creation.id},
+                        status=status.HTTP_200_OK)
 
 
 class GetAllChats(APIView):

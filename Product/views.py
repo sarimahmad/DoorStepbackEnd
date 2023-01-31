@@ -90,6 +90,35 @@ class PlaceOrderView(APIView):
     serializers_class = PlaceOrderSerializer
 
     def post(self, request):
+        # products_data = request.data['product']
+        # products = []
+        # all_quantity= []
+        # sellers = set()
+        # total_cost = 0
+        # for product_data in products_data:
+        #     product = Product.objects.get(pk=product_data.get('id'))
+        #     quantity = product_data.get('quantity')
+        #     total_cost += product.price * quantity
+        #     products.append(product)
+        #     all_quantity.append(quantity)
+        #     sellers.add(product.seller)
+        #
+        # print(products)
+        # print(sellers)
+        # print(total_cost)
+        #
+        # order = PlaceOrder.objects.create(amount=total_cost)
+        # order.quantity = all_quantity
+        # for product in products:
+        #     order.product.add(product)
+        # order.seller.set(sellers)
+        # order.paymentMethod = request.data['paymentMethod']
+        # order_serializer = PlaceOrderSerializer(order)
+        # return Response(order_serializer.data, status=status.HTTP_201_CREATED)
+
+
+
+
         p_id = request.data['product']
         quantity = request.data['quantity']
         seller = request.data['seller']
@@ -113,7 +142,7 @@ class PlaceOrderView(APIView):
                 serializers.save(buyer=request.user)
                 data = serializers.data
                 for i in range(0, len(quantity)):
-                    product = Product.objects.get(id=p_id[i])
+                    product = Product.bjects.get(id=p_id[i])
                     new_data = int(product.quantity) - int(quantity[i])
                     product.quantity = new_data
                     product.save()

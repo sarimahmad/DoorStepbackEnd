@@ -59,9 +59,6 @@ class MyConsumer(AsyncWebsocketConsumer):
         )
         )
 
-
-
-
     async def disconnect(self, *args, **kwargs):
         print("Disconnect")
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)

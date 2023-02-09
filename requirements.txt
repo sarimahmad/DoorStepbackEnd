@@ -1,0 +1,15 @@
+Django
+channels
+channels-redis
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+Markdown
+sqlparse
+psycopg2>=2.8
+redis>=3.5
+django-redis
+celery>=5.0
+Pillow
+
+

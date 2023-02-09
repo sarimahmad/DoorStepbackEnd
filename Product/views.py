@@ -142,7 +142,7 @@ class PlaceOrderView(APIView):
                 serializers.save(buyer=request.user)
                 data = serializers.data
                 for i in range(0, len(quantity)):
-                    product = Product.bjects.get(id=p_id[i])
+                    product = Product.objects.get(id=p_id[i])
                     new_data = int(product.quantity) - int(quantity[i])
                     product.quantity = new_data
                     product.save()

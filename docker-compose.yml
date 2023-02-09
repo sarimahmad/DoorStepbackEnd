@@ -1,0 +1,33 @@
+version: "2"
+services:
+  # Redis
+  redis:
+    image: redis:alpine
+    container_name: DoorStepFarmer_redis
+
+  # Database Postgres
+  # Mention Specific Ports for Project and Db
+  db:
+    image: postgres
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=DoorStepFarmer
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=sarim0987
+    ports:
+      - "54323:5432"
+    container_name: DoorStepFarmer_db
+
+  # Django Application
+  app:
+    build: .
+    volumes:
+      - .:/django
+    ports:
+      - 8000:8000
+    image: app:django
+    container_name: DoorStepFarmer
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db

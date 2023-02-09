@@ -68,6 +68,9 @@ class PlaceOrder(models.Model):
     quantity = models.JSONField(blank=True, null=True)
     amount = models.IntegerField(null=True, blank=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Status(models.Model):
     order = models.ForeignKey(PlaceOrder, on_delete=models.CASCADE,
